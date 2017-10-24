@@ -16,7 +16,8 @@
     </p>
 
     <p>
-        <img [src]="image" *ngIf="image" />
+        <!--<img [src]="image" *ngIf="image" />-->
+        <strong *ngIf="image">IMAGEM CARREGADA</strong>
     </p>
 
     <ion-fab right bottom>
@@ -24,7 +25,7 @@
             <ion-icon name="camera"></ion-icon>
         </button>
         <ion-fab-list side="top">
-            <button ion-fab (click)="takePicture(camera.PictureSourceType.SAVEDPHOTOALBUM)">
+            <button ion-fab (click)="takePicture(camera.PictureSourceType.PHOTOLIBRARY)">
                 <ion-icon name="image"></ion-icon>
             </button>
             <button ion-fab (click)="takePicture(camera.PictureSourceType.CAMERA)">
