@@ -1,4 +1,8 @@
-This is a starter template for [Ionic](http://ionicframework.com/docs/) projects.
+O GrowHealth é um app que analisa deficiências em plantas à partir de uma foto.
+
+A tecnologia do backend é baseada em *machine learning* e fornece uma API onde as resquisições podem ser processadas (em breve será disponibilizada uma API pública). 
+
+
 
 ## How to use this template
 
