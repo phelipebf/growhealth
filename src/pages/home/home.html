@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content padding>
-    <h2>Welcome to Ionic!</h2>
+    <!--<h2>Welcome to Ionic!</h2>
     <p>
         This starter project comes with simple tabs-based layout for apps
         that are going to primarily use a Tabbed UI.
@@ -13,22 +13,30 @@
     <p>
         Take a look at the <code>src/pages/</code> directory to add or change tabs,
         update any existing page or create new pages.
-    </p>
+    </p>-->
 
-    <p>
-        <strong *ngIf="predicao">TESTE</strong>
-        <img [src]="image" *ngIf="image" />
-    </p>
+    <ion-card *ngIf="predicao">
+        <img [src]="image" *ngIf="image"/>
+        <ion-card-content>
+            <ion-card-title>
+                {{predicao}}
+            </ion-card-title>
+            <p>
+                Precisão {{probabilidade}}%
+            </p>
+        </ion-card-content>
+    </ion-card>
 
-    <ion-fab right bottom>
+
+    <ion-fab right bottom #photoFab>
         <button ion-fab color="secondary">
             <ion-icon name="camera"></ion-icon>
         </button>
         <ion-fab-list side="top">
-            <button ion-fab (click)="takePicture(camera.PictureSourceType.PHOTOLIBRARY)">
+            <button ion-fab (click)="takePicture(camera.PictureSourceType.PHOTOLIBRARY, photoFab)">
                 <ion-icon name="image"></ion-icon>
             </button>
-            <button ion-fab (click)="takePicture(camera.PictureSourceType.CAMERA)">
+            <button ion-fab (click)="takePicture(camera.PictureSourceType.CAMERA, photoFab)">
                 <ion-icon name="camera"></ion-icon>
             </button>
         </ion-fab-list>

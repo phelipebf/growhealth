@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
-import {NavController} from 'ionic-angular';
+import {FabContainer, NavController} from 'ionic-angular';
 import {Camera, CameraOptions} from '@ionic-native/camera';
 import {Http, Headers, RequestOptions, RequestMethod} from '@angular/http';
 
-import {FileTransfer, FileUploadOptions, FileTransferObject} from '@ionic-native/file-transfer';
+import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer';
 
 import 'rxjs/add/operator/map';
 
@@ -21,7 +21,7 @@ export class HomePage {
 
     public image: string;
     public imageBlob: any;
-    public predicao: string;
+    public predicao: string = '';
     public probabilidade: number = 0;
     private response: any;
 
@@ -35,45 +35,17 @@ export class HomePage {
         saveToPhotoAlbum: false
     }
 
-    private fileTransfer: FileTransferObject = this.transfer.create();
-
-    takePicture(source) {
+    takePicture(source: number, fab: FabContainer) {
         this.options.sourceType = source;
+        fab.close();
+        location.reload();
+
         this.camera.getPicture(this.options).then((imageData) => {
             this.image = imageData;
             this.testaSementes();
         }, (err) => {
             console.log(err);
         });
-    }
-
-    upload() {
-        let imagem = this.image.split('/');
-        let fileName = imagem[imagem.length - 1];
-
-        let headers = new Headers({
-            // 'Content-Type': undefined,
-            'Content-Type': 'multipart/form-data',
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjI2NDEsImlhdCI6MTUwNjkxMjM3NCwiZXhwIjoxNTE0Njg4Mzc0fQ.erxhx1_KOSDMTBAJ1gAv0szO7oGAqa4TMp9O9NHf3O8'
-        });
-
-        let options: FileUploadOptions = {
-            fileKey: 'image',
-            fileName: fileName,
-            mimeType: 'image/jpeg',
-            chunkedMode: false,
-            headers: headers
-        }
-
-        this.fileTransfer.upload(this.image, 'http://cl-api.vize.ai/2732', options)
-            .then((data) => {
-                // success
-                console.log(data);
-            }, (err) => {
-                // error
-                console.log(err);
-            });
     }
 
     testaSementes() {
@@ -125,8 +97,8 @@ export class HomePage {
 
     getPredicao(data) {
         data.Predictions.forEach(item => {
-            if(item.Probability > this.probabilidade) {
-                this.probabilidade = item.Probability;
+            if (item.Probability > this.probabilidade) {
+                this.probabilidade = item.Probability * 100;
                 this.predicao = item.Tag;
             }
         });
