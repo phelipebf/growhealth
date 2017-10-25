@@ -20,6 +20,9 @@ export class HomePage {
     }
 
     public image: string;
+    public imageBlob: any;
+    public predicao: string;
+    public probabilidade: number = 0;
     private response: any;
 
     private options: CameraOptions = {
@@ -38,7 +41,7 @@ export class HomePage {
         this.options.sourceType = source;
         this.camera.getPicture(this.options).then((imageData) => {
             this.image = imageData;
-            this.upload();
+            this.testaSementes();
         }, (err) => {
             console.log(err);
         });
@@ -77,26 +80,57 @@ export class HomePage {
 
         let imagem = this.image.split('/');
         let fileName = imagem[imagem.length - 1];
-        console.log(fileName);
+
+        (<any>window).resolveLocalFileSystemURL(this.image, (fileEntry) => {
+            fileEntry.file((resFile) => {
+                let reader = new FileReader();
+                reader.readAsArrayBuffer(resFile);
+                reader.onloadend = (evt: any) => {
+                    this.imageBlob = new Blob([evt.target.result], {type: 'image/jpeg'});
+                    this.imageBlob.name = fileName;
+                    this.enviaImagem();
+                };
+                reader.onerror = (e) => {
+                    console.log('Erro ao ler arquivo: ' + e.toString());
+                };
+            })
+        })
+    }
+
+    enviaImagem() {
 
         let body = new FormData();
-        body.append('image', this.image);
+        body.append('image', this.imageBlob);
 
         let headers = new Headers({
-            // 'Content-Type': undefined,
+            'Content-Type': 'application/octet-stream',
             // 'Content-Type': 'multipart/form-data',
             // 'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjI2NDEsImlhdCI6MTUwNjkxMjM3NCwiZXhwIjoxNTE0Njg4Mzc0fQ.erxhx1_KOSDMTBAJ1gAv0szO7oGAqa4TMp9O9NHf3O8'
+            'Prediction-Key': 'c70f08c36c6b467a97633e3198b325ff',
+            // 'Authorization': 'JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjI2NDEsImlhdCI6MTUwNjkxMjM3NCwiZXhwIjoxNTE0Njg4Mzc0fQ.erxhx1_KOSDMTBAJ1gAv0szO7oGAqa4TMp9O9NHf3O8'
         });
 
         let options = new RequestOptions({method: RequestMethod.Post, headers: headers});
 
-        this.http.post('http://cl-api.vize.ai/2732', body, options)
+        // this.http.post('http://cl-api.vize.ai/2732', body, options)
+        this.http.post('https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/a5bbe90c-954a-4f55-9273-b9d0b99f7f0d/image?iterationId=22863e45-17e0-4eaa-ab49-d9d6508dfec6',
+            this.imageBlob, options)
             .map(res => res.json())
             .subscribe(data => {
                 //this.response = data.data.children;
-                this.response = data.data;
-                console.log(this.response);
+                this.response = data;
+                this.getPredicao(this.response);
             });
+    }
+
+    getPredicao(data) {
+        data.Predictions.forEach(item => {
+            if(item.Probability > this.probabilidade) {
+                this.probabilidade = item.Probability;
+                this.predicao = item.Tag;
+            }
+        });
+        console.log(this.probabilidade);
+        console.log(this.predicao);
     }
 }

@@ -13,7 +13,7 @@ import {SplashScreen} from '@ionic-native/splash-screen';
 import {Camera} from '@ionic-native/camera';
 import {HttpModule} from '@angular/http';
 
-import {FileTransfer, FileUploadOptions, FileTransferObject} from '@ionic-native/file-transfer';
+import {FileTransfer} from '@ionic-native/file-transfer';
 
 @NgModule({
     declarations: [
